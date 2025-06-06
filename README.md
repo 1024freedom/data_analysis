@@ -203,9 +203,14 @@ PCA降维结果形状: (5000, 8)
 ### 4. 特征工程优化
 - **PCA降维增强**：
   ```python
-  # 增加标准化预处理
-  scaler = StandardScaler()
-  X_scaled = scaler.fit_transform(X)
+  过滤非数值型列：
+   numeric_cols = [col for col in cols if col in df.columns and pd.api.types.is_numeric_dtype(df[col])]
+   自动过滤非数值列，避免类型错误	
+   无过滤逻辑：
+   直接使用 df[cols]，若 cols 包含非数值列会报错（如字符串类型）
+   缺失值处理：
+   X = df[numeric_cols].fillna(0)
+   自动用 0 填充缺失值
   
   # 输出解释方差信息
   print(f'主成分方差解释比例: {pca.explained_variance_ratio_}')
@@ -289,14 +294,7 @@ PCA降维结果形状: (5000, 8)
 - **方法复用**：
   各处理方法(`_bin_smooth`, `_generalize_data`等)可独立调用
 
-### 10. 去冗余优化
-- 移除了未使用的复杂功能：
-  ```python
-  # 移除旧代码中的以下功能：
-  !pip install missingno  # 非程序化操作
-  from sklearn.linear_model import LinearRegression  # 未实际使用的预测填充
-  build_statistical_features()  # 未完整实现的统计特征
-  ```
+
 
 ### 优化效果对比
 | 优化维度 | 旧代码实现 | 新代码实现 | 提升效果 |
